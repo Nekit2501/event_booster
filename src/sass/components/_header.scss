@@ -1,3 +1,80 @@
-.b {
-  background-color: brown;
+.header {
+  background-color: rgba(11, 11, 11, 0.5);
+  position: relative;
+  padding: 40px 347px 192px 347px;
+  width: 100%;
+  background-image: url('../images/header.png');
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  &-logo {
+    &_blur {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 243px;
+      height: 201px;
+      backdrop-filter: blur(30px);
+      background: linear-gradient(
+        136.05deg,
+        rgba(196, 196, 196, 0.1) 7.362%,
+        rgba(196, 196, 196, 0) 89.206%
+      );
+      border-radius: 0% 0% 100%;
+    }
+    &_svg {
+      position: absolute;
+      left: 40px;
+      top: 40px;
+      width: 136px;
+      height: 69px;
+      fill: rgb(255, 255, 255);
+    }
+  }
+  &_h1 {
+    margin-bottom: 52px;
+    color: rgb(220, 86, 197);
+    font-family: 'Montserrat', sans-serif;
+    font-size: 50px;
+    font-weight: 900;
+    line-height: 61px;
+    text-align: center;
+  }
+  &-pos {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    &_label {
+      position: relative;
+    }
+    &_input {
+      padding: 10px 14px 10px 30px;
+      color: rgb(147, 147, 147);
+      font-family: 'Montserrat', sans-serif;
+      font-size: 16px;
+      font-weight: 400;
+      line-height: 20px;
+      outline: none;
+      border: none;
+      border-radius: 20px;
+      backdrop-filter: blur(20px);
+      background: rgba(255, 255, 255, 0.2);
+    }
+    &_svgSearch {
+      bottom: 14px;
+      right: 26px;
+      position: absolute;
+      width: 12px;
+      height: 12px;
+      fill: rgb(147, 147, 147);
+    }
+    &_svgList {
+      position: absolute;
+      right: 15px;
+      top: 15px;
+      width: 15px;
+      height: 10px;
+      fill: rgb(147, 147, 147);
+    }
+  }
 }
