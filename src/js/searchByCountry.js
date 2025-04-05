@@ -3,15 +3,31 @@
 // та країною місця проведення яку мають вказати у другому.
 // Якщо у першому немає вводу то мають
 // знаходитись усі події у обраному місті
-// const API_KEY = 'brfdbddKGRzc2X8LiBGbED6sZHFCGpLR';
+import debounce from 'debounce';
+const API_KEY = 'brfdbddKGRzc2X8LiBGbED6sZHFCGpLR';
 
-// let apiUrl = `https://app.ticketmaster.com/discovery/v2/events.json?apikey=${API_KEY}`;
+const eventInput = document.querySelector('.header-pos_input');
+const countryInput = document.querySelector('.header-pos_input');
+const searchButton = document.querySelector('.header-pos_svgSearch');
+const listButton = document.querySelector('.header-pos_svgList');
+// let apiUrl = `https://app.ticketmaster.com/discovery/v2/events.json?apikey=${API_KEY}&keyword=${evValue}`;
 
-// const eventInput = document.querySelector('.header-pos_input');
-// const countryInput = document.querySelector('.header-pos_input');
-// const searchButton = document.querySelector('.header-pos_svgList');
-
-// searchButton.addEventListener('click', () => {});
+eventInput.addEventListener(
+  'input',
+  debounce(async e => {
+    try {
+      const evValue = eventInput.value;
+      console.log(evValue);
+      const response = await fetch(
+        `https://app.ticketmaster.com/discovery/v2/events.json?apikey=${API_KEY}&keyword=${evValue}`
+      );
+      const data = await response.json();
+      const embeddedEv = data._embedded.events;
+    } catch (error) {
+      console.log(error);
+    }
+  }, 300)
+);
 
 // const resultsContainer = document.createElement('div');
 // resultsContainer.classList.add('results-container');
