@@ -1,12 +1,7 @@
-// Перший інпут має шукати за назвою події(евробачення тощо).
-// Другий за назвою(якщо є у першому інпуті )
-// та країною місця проведення яку мають вказати у другому.
-// Якщо у першому немає вводу то мають
-// знаходитись усі події у обраному місті
 import debounce from 'debounce';
 const API_KEY = 'brfdbddKGRzc2X8LiBGbED6sZHFCGpLR';
 
-const eventInput = document.querySelector('.header-pos_input');
+const eventInput = document.getElementById('eventInp');
 const countryInput = document.querySelector('.header-pos_input');
 const searchButton = document.querySelector('.header-pos_svgSearch');
 const listButton = document.querySelector('.header-pos_svgList');
