@@ -1,6 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const API_KEY = "brfdbddKGRzc2X8LiBGbED6sZHFCGpLR"; // Replace with your Ticketmaster API key
+  const API_KEY = "brfdbddKGRzc2X8LiBGbED6sZHFCGpLR";
   const modal = document.getElementById("eventModal");
+  const modalContent = document.querySelector(".modal-content");
   const closeModal = document.querySelector(".modal-close");
   const eventButtons = document.querySelectorAll(".event-btn");
   const eventTitle = document.getElementById("eventTitle");
@@ -33,19 +34,31 @@ document.addEventListener("DOMContentLoaded", () => {
   function openModal(eventId) {
     modal.style.display = "flex";
     document.body.style.overflow = "hidden";
+
+    modalContent.classList.remove("animate__zoomOutDown");
+    void modalContent.offsetWidth; // Trigger reflow to restart animation
+    modalContent.classList.add("animate__animated", "animate__zoomInUp");
+
     fetchEventDetails(eventId);
   }
 
   function closeModalFunc() {
-    modal.style.display = "none";
-    document.body.style.overflow = "auto";
+    modalContent.classList.remove("animate__zoomInUp");
+    modalContent.classList.add("animate__zoomOutDown");
+
+    modalContent.addEventListener("animationend", function handler() {
+      modal.style.display = "none";
+      document.body.style.overflow = "auto";
+      modalContent.classList.remove("animate__zoomOutDown");
+      modalContent.removeEventListener("animationend", handler);
+    });
   }
 
   eventButtons.forEach(button => {
     button.addEventListener("click", () => {
       const eventId = button.getAttribute("data-event-id");
       openModal(eventId);
-      console.log(eventId)
+      console.log(eventId);
     });
   });
 
