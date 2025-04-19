@@ -46,7 +46,7 @@ countryInput.addEventListener(
   }, 500)
 );
 
-function createToast(text) {
+export function createToast(text) {
   return Toastify({
     text: text,
     duration: 3000,

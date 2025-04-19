@@ -1,5 +1,27 @@
 import debounce from 'debounce';
 const API_KEY = 'brfdbddKGRzc2X8LiBGbED6sZHFCGpLR';
+import { pagination, paginationMarkup, simpleTemplating } from './pagination';
+import { createToast } from './searchByName';
+// paginationMarkup(100, 1);
+// console.log(paginationMarkup(100, 1));
+// document.querySelector('.c').innerHTML = paginationMarkup(100, 1);
+
+export async function createRequest(evValue, page = 1) {
+  try {
+    const response = await fetch(
+      `https://app.ticketmaster.com/discovery/v2/events.json?apikey=${API_KEY}&keyword=${evValue}&page=${page}`
+    );
+    const data = await response.json();
+    // console.log(data);
+    const embeddedEv = data._embedded.events;
+    const totalPage = data.page.totalPages;
+
+    pagination(totalPage);
+  } catch (error) {
+    createToast('Введіть повну назву');
+    // console.log(error);
+  }
+}
 
 const eventInput = document.getElementById('eventInp');
 const countryInput = document.querySelector('.header-pos_input');
@@ -11,17 +33,14 @@ eventInput.addEventListener(
   'input',
   debounce(async e => {
     try {
+      e.preventDefault();
       const evValue = eventInput.value;
-      console.log(evValue);
-      const response = await fetch(
-        `https://app.ticketmaster.com/discovery/v2/events.json?apikey=${API_KEY}&keyword=${evValue}`
-      );
-      const data = await response.json();
-      const embeddedEv = data._embedded.events;
+      localStorage.setItem('key', JSON.stringify(evValue));
+      createRequest(evValue);
     } catch (error) {
       console.log(error);
     }
-  }, 300)
+  }, 700)
 );
 
 // const resultsContainer = document.createElement('div');
