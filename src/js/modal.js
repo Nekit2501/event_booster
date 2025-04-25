@@ -22,38 +22,7 @@ document.addEventListener("DOMContentLoaded", () => {
         eventDate.textContent = data.dates?.start?.localDate + " " + (data.dates?.start?.localTime || "");
         eventLocation.textContent = data._embedded?.venues?.[0]?.name + ", " + data._embedded?.venues?.[0]?.city?.name;
         eventArtists.textContent = data._embedded?.attractions?.map(a => a.name).join(", ") || "N/A";
-        const priceSection = document.getElementById("priceSection");
-priceSection.innerHTML = ""; // Clear previous prices
-
-if (data.priceRanges && data.priceRanges.length > 0) {
-  data.priceRanges.forEach(range => {
-    const tier = document.createElement("div");
-    tier.classList.add("price-tier");
-
-    const label = document.createElement("span");
-    label.classList.add("price-label");
-    label.textContent = `${range.type || "Ticket"}:`;
-
-    const value = document.createElement("span");
-    value.classList.add("price-value");
-    value.textContent = `${range.min}-${range.max} ${range.currency || "UAH"}`;
-
-    const link = document.createElement("a");
-    link.classList.add("ticket-btn");
-    link.href = data.url || "#";
-    link.target = "_blank";
-    link.textContent = "BUY TICKETS";
-
-    tier.append(label, value, link);
-    priceSection.appendChild(tier);
-  });
-} else {
-  const noPrices = document.createElement("p");
-  noPrices.textContent = "No ticket price info available.";
-  noPrices.style.color = "#999";
-  priceSection.appendChild(noPrices);
-}
-
+        ticketLink.href = data.url || "#";
         eventImage.src = data.images?.[0]?.url || "https://placehold.co/400x400";
       })
       .catch(err => {
