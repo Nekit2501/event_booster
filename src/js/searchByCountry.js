@@ -1,5 +1,6 @@
 import debounce from 'debounce';
-const API_KEY = 'brfdbddKGRzc2X8LiBGbED6sZHFCGpLR';
+import { renderCards } from './cards';
+export const API_KEY = 'brfdbddKGRzc2X8LiBGbED6sZHFCGpLR';
 
 const eventInput = document.getElementById('eventInp');
 const countryInput = document.querySelector('.header-pos_input');
@@ -18,6 +19,7 @@ eventInput.addEventListener(
       );
       const data = await response.json();
       const embeddedEv = data._embedded.events;
+      renderCards(embeddedEv);
     } catch (error) {
       console.log(error);
     }
