@@ -4,9 +4,9 @@
 
 // // const language = navigator.language || navigator.userAgent;
 
-// document.addEventListener('DOMContentLoaded', e => {
-//   RenderGeolocation(e);
-// });
+document.addEventListener('DOMContentLoaded', e => {
+  firstload(e);
+});
 // // fetchIventsGeo(getLocation());
 // // RenderGeolocation();
 
@@ -61,28 +61,40 @@ import { renderCards } from './cards';
 import { API_KEY } from './searchByCountry';
 import geohash from 'ngeohash';
 
-async function locate(e) {
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(
-      async position => {
-        console.log(position.coords);
-        const { longitude, latitude } = position.coords;
+// async function locate(e) {
+//   if (navigator.geolocation) {
+//     navigator.geolocation.getCurrentPosition(
+//       async position => {
+//         console.log(position.coords);
+//         const { longitude, latitude } = position.coords;
 
-        const geohashValue = geohash.encode(latitude, longitude);
-        console.log(geohashValue);
-        const response = await fetch(
-          `https://app.ticketmaster.com/discovery/v2/events.json?apikey=${API_KEY}&geoPoint=${geohashValue}&radius=50&unit=km`
-        );
-        const data = await response.json();
-        const event = data._embedded.events;
-        renderCards(event);
-      },
-      error => {
-        console.log(error.message);
-      }
-    );
-  } else {
-    console.log('Геолокація не підтримується');
-  }
+//         const geohashValue = geohash.encode(latitude, longitude);
+//         console.log(geohashValue);
+//         const response = await fetch(
+//           `https://app.ticketmaster.com/discovery/v2/events.json?apikey=${API_KEY}&geoPoint=${geohashValue}&radius=50&unit=km`
+//         );
+//         const data = await response.json();
+//         const event = data._embedded.events;
+//         renderCards(event);
+//       },
+//       error => {
+//         console.log(error.message);
+//       }
+//     );
+//   } else {
+//     console.log('Геолокація не підтримується');
+//   }
+// }
+// locate();
+
+async function firstload(e) {
+  const responseLoading = await fetch(
+    `https://app.ticketmaster.com/discovery/v2/events.json?countryCode=US&apikey=${API_KEY}`
+  );
+  const data = await responseLoading.json();
+  console.log(data);
+  const event = data._embedded.events;
+  renderCards(event);
 }
-locate();
+
+firstload();
