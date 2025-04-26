@@ -92,6 +92,10 @@ paginationCont.addEventListener('click', e => {
   if (e.target.nodeName != 'BUTTON') {
     return;
   }
+  const allButtons = paginationCont.querySelectorAll('.pag-button');
+  allButtons.forEach(btn => btn.classList.remove('active'));
+
+  e.target.classList.add('active');
   let page = 1;
   const localStEv = JSON.parse(localStorage.getItem('key'));
   const evTarget = e.target.textContent;
