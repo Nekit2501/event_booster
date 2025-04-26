@@ -63,9 +63,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const info = document.createElement("div");
     info.className = "event-info";
     info.innerHTML = `
-      <strong>${eventData.name}</strong><br/>
-      ${eventData.dates?.start?.localDate || ""} ${eventData.dates?.start?.localTime || ""}<br/>
-      ${eventData._embedded?.venues?.[0]?.city?.name || ""}`;
+      <strong>${eventData.name}</strong>
+      <div>${eventData.dates?.start?.localDate || ""} ${eventData.dates?.start?.localTime || ""}</div>
+      <div>${eventData._embedded?.venues?.[0]?.city?.name || ""}</div>`;
 
     card.appendChild(img);
     card.appendChild(info);

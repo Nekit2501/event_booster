@@ -42,7 +42,14 @@ body {
 .event-info {
   padding: 5px 10px;
   font-size: 13px;
+  text-align: center;
+  color: white;
+}
+
+.event-info strong {
   color: #DC56C5;
+  display: block;
+  margin-bottom: 5px;
 }
 
 footer {
