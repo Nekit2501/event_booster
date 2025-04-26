@@ -3,24 +3,59 @@ body {
   font-family: 'Segoe UI', sans-serif;
   background-color: #1e1e1e;
   color: #fff;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
 .event-container {
-  text-align: center;
-  margin-top: 50px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+  padding: 40px 20px;
+  flex-grow: 1;
 }
 
-button.event-btn {
-  background: #7b2ff7;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  margin: 10px;
-  font-size: 16px;
-  border-radius: 10px;
+.event-card {
+  width: 180px;
+  height: 300px;
+  background-color: #2b2b2b;
+  border-top-left-radius: 50px;
+  border-bottom-right-radius: 50px;
+  overflow: hidden;
   cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
 }
 
+.event-card img {
+  width: 180px;
+  height: 227px;
+  object-fit: cover;
+  border-top-left-radius: 50px;
+  border-bottom-right-radius: 50px;
+}
+
+.event-info {
+  padding: 5px 10px;
+  font-size: 13px;
+  color: #DC56C5;
+}
+
+footer {
+  margin-top: auto;
+  text-align: center;
+  padding: 20px;
+  background: #111;
+  color: #aaa;
+  font-size: 14px;
+  width: 100%;
+}
+
+/* Modal */
 .modal {
   display: none;
   position: fixed;
@@ -78,16 +113,29 @@ button.event-btn {
   border-radius: 10px;
 }
 
-footer {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
+.highlight {
+  color: #DC56C5;
+}
+
+/* Pagination */
+.pagination {
   text-align: center;
-  padding: 20px;
-  background: #111;
-  color: #aaa;
-  font-size: 14px;
+  margin: 20px 0;
+}
+
+.page-btn {
+  background: #2b2b2b;
+  border: 2px solid transparent;
+  border-radius: 50px 0 50px 0;
+  color: #fff;
+  padding: 8px 16px;
+  margin: 0 4px;
+  cursor: pointer;
+}
+
+.page-btn.active {
+  border-color: #DC56C5;
+  font-weight: bold;
 }
 
 /* Responsive */
@@ -99,5 +147,11 @@ footer {
 
   .modal-content {
     border-radius: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .event-card {
+    width: 45%;
   }
 }
