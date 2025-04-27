@@ -2,8 +2,8 @@ import debounce from 'debounce';
 import Toastify from 'toastify-js';
 import 'toastify-js/src/toastify.css';
 import countryMap from './countries.json';
-
-const API_KEY = 'brfdbddKGRzc2X8LiBGbED6sZHFCGpLR'; //API_KEY for fetch
+import { renderCards } from './cards';
+export const API_KEY = 'brfdbddKGRzc2X8LiBGbED6sZHFCGpLR';
 
 const countryInput = document.getElementById('countryInp');
 const listButton = document.querySelector('.header-pos_svgList');
@@ -36,7 +36,8 @@ countryInput.addEventListener(
         const response = await fetch(
           `https://app.ticketmaster.com/discovery/v2/events.json?apikey=${API_KEY}&keyword=${evValue}&countryCode=${id}`
         );
-        console.log(await response.json());
+        const data = await response.json();
+        renderCards(data._embedded.events);
       } else {
         createToast('Країну не знайдено');
       }
