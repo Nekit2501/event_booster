@@ -1,4 +1,5 @@
 export function renderCards(e) {
+  console.log(e);
   const ul = document.querySelector('.events');
   const markup = e
     .map(item => {
