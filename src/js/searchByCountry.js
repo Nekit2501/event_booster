@@ -38,6 +38,7 @@ countryInput.addEventListener(
           `https://app.ticketmaster.com/discovery/v2/events.json?apikey=${API_KEY}&keyword=${evValue}&countryCode=${id}`
         );
         const data = await response.json();
+        console.log(data);
         renderCards(data._embedded.events);
       } else {
         createToast('Країну не знайдено');
