@@ -21,7 +21,7 @@ function getCountryID(countryMatch) {
   if (match) {
     return match.countryCode;
   } else {
-    console.log('CountryCode не знайдений');
+    createToast('Подій в цій країні немає');
   }
 }
 
@@ -29,6 +29,7 @@ countryInput.addEventListener(
   'input',
   debounce(async e => {
     try {
+      e.preventDefault();
       const evValue = eventInput.value;
       const id = getCountryID(countryInput.value);
       if (id) {
@@ -42,9 +43,9 @@ countryInput.addEventListener(
         createToast('Країну не знайдено');
       }
     } catch (error) {
-      createToast(error.message); // redirect
+      createToast('Подій не знайдено'); // redirect
     }
-  }, 500)
+  }, 700)
 );
 
 function createToast(text) {

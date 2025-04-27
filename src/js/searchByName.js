@@ -1,4 +1,5 @@
 import debounce from 'debounce';
+import { renderCards } from './cards';
 export const API_KEY = 'brfdbddKGRzc2X8LiBGbED6sZHFCGpLR';
 
 const eventInput = document.getElementById('eventInp');
@@ -15,8 +16,41 @@ eventInput.addEventListener(
       );
       const data = await response.json();
       const embeddedEv = data._embedded.events;
+      renderCards(embeddedEv);
     } catch (error) {
-      console.log(error);
+      createToast('Ooops...');
     }
-  }, 300)
+  }, 500)
 );
+
+export function createToast(text) {
+  return Toastify({
+    text: text,
+    duration: 3000,
+    destination: 'https://github.com/apvarun/toastify-js',
+    newWindow: true,
+    close: true,
+    gravity: 'top', // `top` or `bottom`
+    position: 'left', // `left`, `center` or `right`
+    stopOnFocus: true, // Prevents dismissing of toast on hover
+    style: {
+      background: 'red',
+    },
+    onClick: function () {}, // Callback after click
+  }).showToast();
+}
+
+// Toastify({
+//   text: 'This is a toast',
+//   duration: 3000,
+//   destination: 'https://github.com/apvarun/toastify-js',
+//   newWindow: true,
+//   close: true,
+//   gravity: 'top', // `top` or `bottom`
+//   position: 'left', // `left`, `center` or `right`
+//   stopOnFocus: true, // Prevents dismissing of toast on hover
+//   style: {
+//     background: 'linear-gradient(to right, #00b09b, #96c93d)',
+//   },
+//   onClick: function () {}, // Callback after click
+// }).showToast();
