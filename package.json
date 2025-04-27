@@ -2,14 +2,14 @@
   "name": "parcel-project-template",
   "version": "2.0.0",
   "description": "",
-  "homepage": "https://github.com/Sokolove-Olexii/CountyEv-needsToRework-",
+  "homepage": "https://github.com/Nekit2501/event_booster",
   "scripts": {
     "start": "parcel src/*.html",
-    "build": "parcel build src/*.html --public-url /CountyEv-needsToRework-/"
+    "build": "parcel build src/*.html --public-url /event_booster/"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Sokolove-Olexii/CountyEv-needsToRework-.git"
+    "url": "git+https://github.com/Nekit2501/event_booster.git"
   },
   "keywords": [],
   "author": "Alexander Repeta <alexander.repeta@gmail.com>",
