@@ -43,7 +43,8 @@ countryInput.addEventListener(
         createToast('Країну не знайдено');
       }
     } catch (error) {
-      createToast('Подій не знайдено'); // redirect
+      console.log(error);
+      // createToast('Подій не знайдено'); // redirect
     }
   }, 700)
 );
