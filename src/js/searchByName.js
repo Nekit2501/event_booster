@@ -1,47 +1,24 @@
 import debounce from 'debounce';
-import Toastify from 'toastify-js';
-import 'toastify-js/src/toastify.css';
-const API_KEY = 'brfdbddKGRzc2X8LiBGbED6sZHFCGpLR';
+import { renderCards } from './cards';
+export const API_KEY = 'brfdbddKGRzc2X8LiBGbED6sZHFCGpLR';
 
-const countryInput = document.getElementById('countryInp');
-const listButton = document.querySelector('.header-pos_svgList');
 const eventInput = document.getElementById('eventInp');
+const searchButton = document.querySelector('.header-pos_svgSearch');
 
-import countryMap from './countries.json';
-
-const countries = countryMap.map(item => item.country);
-const countriesCode = countryMap.map(item => item.countryCode);
-console.log(countries);
-console.log(countriesCode);
-
-function getCountryID(countryMatch) {
-  const match = countryMap.find(
-    item => item.country.toLowerCase() === countryMatch.trim().toLowerCase()
-  );
-  if (match) {
-    return match.countryCode;
-  } else {
-    createToast('CountryCode не знайдений');
-  }
-}
-
-countryInput.addEventListener(
+eventInput.addEventListener(
   'input',
   debounce(async e => {
     try {
       const evValue = eventInput.value;
-      const id = getCountryID(countryInput.value);
-      if (id) {
-        console.log(`Country ID: ${id}`);
-        const response = await fetch(
-          `https://app.ticketmaster.com/discovery/v2/events.json?apikey=${API_KEY}&keyword=${evValue}&countryCode=${id}`
-        );
-        console.log(await response.json());
-      } else {
-        createToast('Країну не знайдено');
-      }
+      console.log(evValue);
+      const response = await fetch(
+        `https://app.ticketmaster.com/discovery/v2/events.json?apikey=${API_KEY}&keyword=${evValue}`
+      );
+      const data = await response.json();
+      const embeddedEv = data._embedded.events;
+      renderCards(embeddedEv);
     } catch (error) {
-      createToast(error.message); // redirect
+      createToast('Ooops...');
     }
   }, 500)
 );

@@ -1,97 +1,96 @@
 import debounce from 'debounce';
-const API_KEY = 'brfdbddKGRzc2X8LiBGbED6sZHFCGpLR';
-import { pagination, paginationMarkup, simpleTemplating } from './pagination';
-import { createToast } from './searchByName';
-// paginationMarkup(100, 1);
-// console.log(paginationMarkup(100, 1));
-// document.querySelector('.c').innerHTML = paginationMarkup(100, 1);
+import Toastify from 'toastify-js';
+import 'toastify-js/src/toastify.css';
+import countryMap from './countries.json';
+import { renderCards } from './cards';
+export const API_KEY = 'brfdbddKGRzc2X8LiBGbED6sZHFCGpLR';
 
-export async function createRequest(evValue, page = 1) {
-  try {
-    const response = await fetch(
-      `https://app.ticketmaster.com/discovery/v2/events.json?apikey=${API_KEY}&keyword=${evValue}&page=${page}`
-    );
-    const data = await response.json();
-    // console.log(data);
-    const embeddedEv = data._embedded.events;
-    const totalPage = data.page.totalPages;
+const countryInput = document.getElementById('countryInp');
+const listButton = document.querySelector('.header-pos_svgList');
+const eventInput = document.getElementById('eventInp');
 
-    pagination(totalPage);
-  } catch (error) {
-    createToast('Введіть повну назву');
-    // console.log(error);
+const countries = countryMap.map(item => item.country);
+console.log(countries);
+const countriesCode = countryMap.map(item => item.countryCode);
+console.log(countriesCode);
+
+function getCountryID(countryMatch) {
+  const match = countryMap.find(
+    item => item.country.toLowerCase() === countryMatch.trim().toLowerCase()
+  );
+  if (match) {
+    return match.countryCode;
+  } else {
+    createToast('Подій в цій країні немає');
   }
 }
 
-const eventInput = document.getElementById('eventInp');
-const countryInput = document.querySelector('.header-pos_input');
-const searchButton = document.querySelector('.header-pos_svgSearch');
-const listButton = document.querySelector('.header-pos_svgList');
-// let apiUrl = `https://app.ticketmaster.com/discovery/v2/events.json?apikey=${API_KEY}&keyword=${evValue}`;
-
-eventInput.addEventListener(
+countryInput.addEventListener(
   'input',
   debounce(async e => {
     try {
       e.preventDefault();
       const evValue = eventInput.value;
-      localStorage.setItem('key', JSON.stringify(evValue));
-      createRequest(evValue);
+      const id = getCountryID(countryInput.value);
+      if (id) {
+        console.log(`Country ID: ${id}`);
+        const response = await fetch(
+          `https://app.ticketmaster.com/discovery/v2/events.json?apikey=${API_KEY}&keyword=${evValue}&countryCode=${id}`
+        );
+        const data = await response.json();
+        renderCards(data._embedded.events);
+      } else {
+        createToast('Країну не знайдено');
+      }
     } catch (error) {
-      console.log(error);
+      createToast('Подій не знайдено'); // redirect
     }
   }, 700)
 );
 
-// const resultsContainer = document.createElement('div');
-// resultsContainer.classList.add('results-container');
+function createToast(text) {
+  return Toastify({
+    text: text,
+    duration: 5000,
+    destination: 'https://github.com/apvarun/toastify-js',
+    newWindow: true,
+    close: true,
+    gravity: 'top', // `top` or `bottom`
+    position: 'right', // `left`, `center` or `right`
+    stopOnFocus: true, // Prevents dismissing of toast on hover
+    className: 'toast',
+    style: {
+      display: 'flex',
+      width: '300px',
+      height: 'auto',
+      padding: '16px 24px',
+      gap: '40px',
+      justifyContent: 'center',
+      alignItems: 'center',
+      textAlign: 'center',
+      fontFamily: '"Montserrat", sans-serif',
+      fontSize: '16px',
+      fontWeight: 'bold',
+      borderRadius: '12px',
+      background: 'linear-gradient(45deg, #ff416c, #ff4b2b)',
+      color: '#fff',
+      boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
+    },
+    onClick: function () {}, // Callback after click
+  }).showToast();
+}
 
-// const searchInput = document.getElementById('search');
-// const messageDiv = document.getElementById('message');
-// const countryList = document.getElementById('country-list');
-// const resultDiv = document.getElementById('result');
-
-// async function fetchCountries(main) {
-//   if (!main) return [];
-//   try {
-//     const response = await fetch(`https://restcountries.com/v2/name/${main}`);
-//     if (!response.ok) throw new Error('Country not found');
-//     return await response.json();
-//   } catch (error) {
-//     return [];
-//   }
-// }
-
-// const handleSearch = async () => {
-//   const main = searchInput.value.trim();
-//   const results = await fetchCountries(main);
-//   messageDiv.textContent = '';
-//   countryList.innerHTML = '';
-//   resultDiv.innerHTML = '';
-
-//   if (results.length > 10) {
-//     messageDiv.textContent =
-//       'Too many matches found. Please specify your search.';
-//   } else if (results.length > 1) {
-//     results.forEach(country => {
-//       const li = document.createElement('li');
-//       li.textContent = country.name;
-//       countryList.appendChild(li);
-//     });
-//   } else if (results.length === 1) {
-//     const country = results[0];
-//     resultDiv.innerHTML = `
-//                     <h2>${country.name}</h2>
-//                     <p>Capital: ${country.capital}</p>
-//                     <p>Population: ${country.population.toLocaleString()}</p>
-//                     <p>Languages: ${country.languages
-//                       .map(lang => lang.name)
-//                       .join(', ')}</p>
-//                     <img src="${country.flag}" alt="Flag of ${country.name}">
-//                 `;
-//   } else {
-//     messageDiv.textContent = 'No matches found.';
-//   }
-// };
-
-// searchInput.addEventListener('input', handleSearch);
+// Toastify({
+//   text: 'This is a toast',
+//   duration: 3000,
+//   destination: 'https://github.com/apvarun/toastify-js',
+//   newWindow: true,
+//   close: true,
+//   gravity: 'top', // `top` or `bottom`
+//   position: 'left', // `left`, `center` or `right`
+//   stopOnFocus: true, // Prevents dismissing of toast on hover
+//   style: {
+//     background: 'linear-gradient(to right, #00b09b, #96c93d)',
+//   },
+//   onClick: function () {}, // Callback after click
+// }).showToast();
