@@ -1,80 +1,95 @@
 import debounce from 'debounce';
+import Toastify from 'toastify-js';
+import 'toastify-js/src/toastify.css';
+import countryMap from './countries.json';
 import { renderCards } from './cards';
 export const API_KEY = 'brfdbddKGRzc2X8LiBGbED6sZHFCGpLR';
 
-const eventInput = document.getElementById('eventInp');
-const countryInput = document.querySelector('.header-pos_input');
-const searchButton = document.querySelector('.header-pos_svgSearch');
+const countryInput = document.getElementById('countryInp');
 const listButton = document.querySelector('.header-pos_svgList');
-// let apiUrl = `https://app.ticketmaster.com/discovery/v2/events.json?apikey=${API_KEY}&keyword=${evValue}`;
+const eventInput = document.getElementById('eventInp');
 
-eventInput.addEventListener(
+const countries = countryMap.map(item => item.country);
+console.log(countries);
+const countriesCode = countryMap.map(item => item.countryCode);
+console.log(countriesCode);
+
+function getCountryID(countryMatch) {
+  const match = countryMap.find(
+    item => item.country.toLowerCase() === countryMatch.trim().toLowerCase()
+  );
+  if (match) {
+    return match.countryCode;
+  } else {
+    console.log('CountryCode не знайдений');
+  }
+}
+
+countryInput.addEventListener(
   'input',
   debounce(async e => {
     try {
       const evValue = eventInput.value;
-      console.log(evValue);
-      const response = await fetch(
-        `https://app.ticketmaster.com/discovery/v2/events.json?apikey=${API_KEY}&keyword=${evValue}`
-      );
-      const data = await response.json();
-      const embeddedEv = data._embedded.events;
-      renderCards(embeddedEv);
+      const id = getCountryID(countryInput.value);
+      if (id) {
+        console.log(`Country ID: ${id}`);
+        const response = await fetch(
+          `https://app.ticketmaster.com/discovery/v2/events.json?apikey=${API_KEY}&keyword=${evValue}&countryCode=${id}`
+        );
+        const data = await response.json();
+        renderCards(data._embedded.events);
+      } else {
+        createToast('Країну не знайдено');
+      }
     } catch (error) {
-      console.log(error);
+      createToast(error.message); // redirect
     }
-  }, 300)
+  }, 500)
 );
 
-// const resultsContainer = document.createElement('div');
-// resultsContainer.classList.add('results-container');
+function createToast(text) {
+  return Toastify({
+    text: text,
+    duration: 5000,
+    destination: 'https://github.com/apvarun/toastify-js',
+    newWindow: true,
+    close: true,
+    gravity: 'top', // `top` or `bottom`
+    position: 'right', // `left`, `center` or `right`
+    stopOnFocus: true, // Prevents dismissing of toast on hover
+    className: 'toast',
+    style: {
+      display: 'flex',
+      width: '300px',
+      height: 'auto',
+      padding: '16px 24px',
+      gap: '40px',
+      justifyContent: 'center',
+      alignItems: 'center',
+      textAlign: 'center',
+      fontFamily: '"Montserrat", sans-serif',
+      fontSize: '16px',
+      fontWeight: 'bold',
+      borderRadius: '12px',
+      background: 'linear-gradient(45deg, #ff416c, #ff4b2b)',
+      color: '#fff',
+      boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
+    },
+    onClick: function () {}, // Callback after click
+  }).showToast();
+}
 
-// const searchInput = document.getElementById('search');
-// const messageDiv = document.getElementById('message');
-// const countryList = document.getElementById('country-list');
-// const resultDiv = document.getElementById('result');
-
-// async function fetchCountries(main) {
-//   if (!main) return [];
-//   try {
-//     const response = await fetch(`https://restcountries.com/v2/name/${main}`);
-//     if (!response.ok) throw new Error('Country not found');
-//     return await response.json();
-//   } catch (error) {
-//     return [];
-//   }
-// }
-
-// const handleSearch = async () => {
-//   const main = searchInput.value.trim();
-//   const results = await fetchCountries(main);
-//   messageDiv.textContent = '';
-//   countryList.innerHTML = '';
-//   resultDiv.innerHTML = '';
-
-//   if (results.length > 10) {
-//     messageDiv.textContent =
-//       'Too many matches found. Please specify your search.';
-//   } else if (results.length > 1) {
-//     results.forEach(country => {
-//       const li = document.createElement('li');
-//       li.textContent = country.name;
-//       countryList.appendChild(li);
-//     });
-//   } else if (results.length === 1) {
-//     const country = results[0];
-//     resultDiv.innerHTML = `
-//                     <h2>${country.name}</h2>
-//                     <p>Capital: ${country.capital}</p>
-//                     <p>Population: ${country.population.toLocaleString()}</p>
-//                     <p>Languages: ${country.languages
-//                       .map(lang => lang.name)
-//                       .join(', ')}</p>
-//                     <img src="${country.flag}" alt="Flag of ${country.name}">
-//                 `;
-//   } else {
-//     messageDiv.textContent = 'No matches found.';
-//   }
-// };
-
-// searchInput.addEventListener('input', handleSearch);
+// Toastify({
+//   text: 'This is a toast',
+//   duration: 3000,
+//   destination: 'https://github.com/apvarun/toastify-js',
+//   newWindow: true,
+//   close: true,
+//   gravity: 'top', // `top` or `bottom`
+//   position: 'left', // `left`, `center` or `right`
+//   stopOnFocus: true, // Prevents dismissing of toast on hover
+//   style: {
+//     background: 'linear-gradient(to right, #00b09b, #96c93d)',
+//   },
+//   onClick: function () {}, // Callback after click
+// }).showToast();
