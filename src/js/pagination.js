@@ -83,7 +83,6 @@ function paginationMarkup(pagData) {
     })
     .join('');
   paginationCont.innerHTML = markup;
-  // console.log(markup);
 }
 
 paginationCont.addEventListener('click', e => {
