@@ -1,5 +1,6 @@
 import debounce from 'debounce';
 import { renderCards } from './cards';
+import Toastify from 'toastify-js';
 export const API_KEY = 'brfdbddKGRzc2X8LiBGbED6sZHFCGpLR';
 
 const eventInput = document.getElementById('eventInp');
@@ -18,7 +19,8 @@ eventInput.addEventListener(
       const embeddedEv = data._embedded.events;
       renderCards(embeddedEv);
     } catch (error) {
-      createToast('Ooops...');
+      console.log(error);
+      // createToast('Ooops...');
     }
   }, 500)
 );

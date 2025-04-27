@@ -1,5 +1,252 @@
-.a {
-  background-color: aqua;
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #1e1e1e;
+  color: #fff;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* CENTER EVERYTHING */
+}
+
+/* Event container */
+.event-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+  padding: 40px 20px;
+  flex-grow: 1;
+  max-width: 1280px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Event card */
+.event-card {
+  width: 180px;
+  height: 300px;
+  background-color: #2b2b2b;
+  border-top-left-radius: 50px;
+  border-bottom-right-radius: 50px;
+  overflow: hidden;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.event-card img {
+  width: 180px;
+  height: 227px;
+  object-fit: cover;
+  border-top-left-radius: 50px;
+  border-bottom-right-radius: 50px;
+}
+
+/* Event info inside card */
+.event-info {
+  padding: 5px 10px;
+  font-size: 13px;
+  text-align: center;
+  color: white;
+}
+
+.event-info strong {
+  color: #DC56C5;
+  display: block;
+  margin-bottom: 5px;
+}
+
+/* Footer */
+footer {
+  margin-top: auto;
+   width: 100vw;
+  background: #111;
+  color: #aaa;
+  font-size: 14px;
+  text-align: center;
+  padding: 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.footer-content {
+  max-width: 12080px;
+  width: 100%;
+}
+
+/* Modal */
+.modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+/* Modal content */
+.modal-content {
+  background: #2b2b2b;
+  border-radius: 50px 0 50px 0;
+  padding: 20px;
+  position: relative;
+  width: 942px;
+  max-width: 95%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Modal body */
+.modal-body {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+  width: 100%;
+}
+
+/* Modal image */
+.modal-image {
+  flex: 1 1 300px;
+  max-width: 400px;
+  width: 100%;
+  border-radius: 20px;
+  object-fit: cover;
+}
+
+/* Modal details */
+.modal-details {
+  flex: 1 1 300px;
+  min-width: 200px;
+  text-align: left;
+}
+
+/* Modal close button */
+.modal-close {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  font-size: 28px;
+  color: white;
+  cursor: pointer;
+}
+
+/* Ticket button */
+.ticket-btn {
+  display: inline-block;
+  margin-top: 20px;
+  padding: 12px 20px;
+  background: #7b2ff7;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 10px;
+}
+
+/* Highlight color */
+.highlight {
+  color: #DC56C5;
+}
+
+/* Pagination */
+.pagination {
+  margin: 20px 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+}
+
+.page-btn {
+  background: #2b2b2b;
+  border: 2px solid transparent;
+  border-radius: 50px 0 50px 0;
+  color: #fff;
+  padding: 8px 16px;
+  cursor: pointer;
+}
+
+.page-btn.active {
+  border-color: #DC56C5;
+  font-weight: bold;
+}
+
+/* Responsive behavior */
+
+/* For 1280px screens */
+@media (max-width: 1280px) {
+  .modal-content {
+    width: 942px;
+  }
+}
+
+/* For 768px screens */
+@media (max-width: 768px) {
+  .modal-content {
+    width: 595px;
+    border-radius: 20px;
+  }
+
+  .modal-body {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .event-card {
+    width: 140px;
+    height: 250px;
+  }
+
+  .event-card img {
+    width: 140px;
+    height: 190px;
+  }
+}
+
+/* For 480px screens */
+@media (max-width: 480px) {
+  .event-container {
+    padding: 20px 10px;
+  }
+
+  .event-card {
+    width: 45%;
+    height: auto;
+  }
+
+  .event-card img {
+    width: 100%;
+    height: auto;
+  }
+
+  .pagination {
+    gap: 4px;
+  }
+}
+
+/* For 320px screens */
+@media (max-width: 320px) {
+  .modal-content {
+    width: 272px;
+    border-radius: 20px;
+  }
+
+  .ticket-btn {
+    width: 100%;
+    text-align: center;
+  }
+
+  .modal-close {
+    top: 10px;
+    right: 10px;
+    font-size: 24px;
+  }
 }
 
 .pagination-container {

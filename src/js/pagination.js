@@ -49,8 +49,6 @@
 // };
 // const data = [1, 2, 3, 4, 5];
 
-import { createRequest } from './searchByCountry';
-
 // export function simpleTemplating(data) {
 //   var html = '<ul>';
 //   $.each(data, function (index, item) {
@@ -104,7 +102,6 @@ paginationCont.addEventListener('click', e => {
   // console.log(evTarget);
   // const keyword = e.target.dataset.keyword;
   // console.log(keyword);
-  createRequest(localStEv, page);
 });
 
 // console.log(pagination(10));
