@@ -248,3 +248,35 @@ footer {
     font-size: 24px;
   }
 }
+
+.pagination-container {
+  display: flex;
+  list-style: none;
+  gap: 5px;
+}
+
+.pag-button {
+  width: 30px;
+  height: 30px;
+  color: rgb(255, 255, 255);
+  font-family: 'Montserrat', sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 20px;
+  text-align: center;
+  border: none;
+  background: none;
+}
+
+.pag-button:hover {
+  box-sizing: border-box;
+  border-radius: 10px 0px 10px 0px;
+  color: rgb(220, 86, 197);
+  border: 1px solid rgb(220, 86, 197);
+}
+
+.pag-button.active {
+  border: 1px solid rgb(220, 86, 197);
+  color: rgb(220, 86, 197);
+  border-radius: 10px 0px 10px 0px;
+}
