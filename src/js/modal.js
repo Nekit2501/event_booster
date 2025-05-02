@@ -4,15 +4,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const modalContent = modal.querySelector('.modal-content');
   const closeModal = modal.querySelector('.modal-close');
 
-  const eventList = document.querySelector('.events');
-  const eventTitle = document.getElementById('eventTitle');
-  const eventDescription = document.getElementById('eventDescription');
-  const eventDate = document.getElementById('eventDate');
-  const eventLocation = document.getElementById('eventLocation');
-  const eventArtists = document.getElementById('eventArtists');
-  const ticketLink = document.getElementById('ticketLink');
-  const eventImage = document.getElementById('eventImage');
-
   const eventContainer = document.getElementById('eventContainer');
   const pagination = document.getElementById('pagination');
 
@@ -28,8 +19,9 @@ document.addEventListener('DOMContentLoaded', () => {
   let currentPage = 1;
   const eventsPerPage = 4;
 
+  // Display Events
   function displayEvents(page) {
-    eventContainer.innerHTML = '';
+    eventContainer.innerHTML = ''; // Clear previous content
     const start = (page - 1) * eventsPerPage;
     const end = start + eventsPerPage;
     const currentEvents = allEventIds.slice(start, end);
@@ -37,6 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
     updatePagination();
   }
 
+  // Pagination
   function updatePagination() {
     pagination.innerHTML = '';
     const pageCount = Math.ceil(allEventIds.length / eventsPerPage);
@@ -52,6 +45,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  // Create Event Card
   function createEventCard(eventData) {
     const card = document.createElement('div');
     card.className = 'event-card';
@@ -65,9 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
     info.className = 'event-info';
     info.innerHTML = `
       <strong>${eventData.name}</strong>
-      <div>${eventData.dates?.start?.localDate || ''} ${
-      eventData.dates?.start?.localTime || ''
-    }</div>
+      <div>${eventData.dates?.start?.localDate || ''} ${eventData.dates?.start?.localTime || ''}</div>
       <div>${eventData._embedded?.venues?.[0]?.city?.name || ''}</div>`;
 
     card.appendChild(img);
@@ -76,44 +68,41 @@ document.addEventListener('DOMContentLoaded', () => {
     eventContainer.appendChild(card);
   }
 
+  // Fetch Event Data
   function fetchEvent(eventId) {
-    fetch(
-      `https://app.ticketmaster.com/discovery/v2/events/${eventId}.json?apikey=${API_KEY}`
-    )
+    fetch(`https://app.ticketmaster.com/discovery/v2/events/${eventId}.json?apikey=${API_KEY}`)
       .then(res => res.json())
       .then(data => createEventCard(data))
-      .catch(err => console.error('Failed to fetch event:', err));
-  }
-
-  function fetchEventDetails(eventId) {
-    fetch(
-      `https://app.ticketmaster.com/discovery/v2/events/${eventId}.json?apikey=${API_KEY}`
-    )
-      .then(res => res.json())
-      .then(data => {
-        eventTitle.textContent = data.name || 'Unknown Title';
-        eventDescription.textContent = data.info || 'No description available.';
-        eventDate.textContent =
-          data.dates?.start?.localDate +
-          ' ' +
-          (data.dates?.start?.localTime || '');
-        eventLocation.textContent =
-          data._embedded?.venues?.[0]?.name +
-          ', ' +
-          data._embedded?.venues?.[0]?.city?.name;
-        eventArtists.textContent =
-          data._embedded?.attractions?.map(a => a.name).join(', ') || 'N/A';
-        ticketLink.href = data.url || '#';
-        eventImage.src =
-          data.images?.[0]?.url || 'https://placehold.co/400x400';
-      })
       .catch(err => {
         console.error('Failed to fetch event:', err);
-        eventTitle.textContent = 'Error loading event';
-        eventDescription.textContent = 'Please try again later.';
+        const fallbackCard = document.createElement('div');
+        fallbackCard.className = 'event-card';
+        fallbackCard.textContent = 'Failed to load event';
+        eventContainer.appendChild(fallbackCard);
       });
   }
 
+  // Fetch Event Details for Modal
+  function fetchEventDetails(eventId) {
+    fetch(`https://app.ticketmaster.com/discovery/v2/events/${eventId}.json?apikey=${API_KEY}`)
+      .then(res => res.json())
+      .then(data => {
+        document.getElementById('eventTitle').textContent = data.name || 'Unknown Title';
+        document.getElementById('eventDescription').textContent = data.info || 'No description available.';
+        document.getElementById('eventDate').textContent = `${data.dates?.start?.localDate} ${data.dates?.start?.localTime || ''}`;
+        document.getElementById('eventLocation').textContent = `${data._embedded?.venues?.[0]?.name}, ${data._embedded?.venues?.[0]?.city?.name}`;
+        document.getElementById('eventArtists').textContent = data._embedded?.attractions?.map(a => a.name).join(', ') || 'N/A';
+        document.getElementById('ticketLink').href = data.url || '#';
+        document.getElementById('eventImage').src = data.images?.[0]?.url || 'https://placehold.co/400x400';
+      })
+      .catch(err => {
+        console.error('Failed to fetch event details:', err);
+        document.getElementById('eventTitle').textContent = 'Error loading event';
+        document.getElementById('eventDescription').textContent = 'Please try again later.';
+      });
+  }
+
+  // Open Modal
   function openModal(eventId) {
     fetchEventDetails(eventId);
     modal.style.display = 'flex';
@@ -122,6 +111,7 @@ document.addEventListener('DOMContentLoaded', () => {
     modalContent.classList.add('animate__zoomInUp');
   }
 
+  // Close Modal
   function closeModalFunc() {
     modalContent.classList.remove('animate__zoomInUp');
     modalContent.classList.add('animate__zoomOutDown');
@@ -131,21 +121,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 500);
   }
 
-  eventList.addEventListener('click', event => {
-    if (!event.target.tagName === 'IMG') {
-      console.log('abc');
-      return;
-    } else {
-      const id = event.target.id;
-      console.log(id);
-      openModal(id);
-    }
-  });
-
   closeModal.addEventListener('click', closeModalFunc);
   modal.addEventListener('click', e => {
     if (e.target === modal) closeModalFunc();
   });
 
+  // Initialize
   displayEvents(currentPage);
 });
