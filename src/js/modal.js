@@ -3,108 +3,43 @@ document.addEventListener('DOMContentLoaded', async () => {
   const API_KEY = 'brfdbddKGRzc2X8LiBGbED6sZHFCGpLR';
   const eventContainer = document.querySelector('.event-container');
   const modal = document.getElementById('eventModal');
-  const modalContent = document.querySelector('.modal-content');
-  const closeModal = document.querySelector('.modal-close');
-  const pagination = document.querySelector('.pagination');
+  const modalContent = modal.querySelector('.modal-content');
+  const closeModal = modal.querySelector('.modal-close');
 
-  // State
+  const eventList = document.querySelector('.events');
+  const eventTitle = document.getElementById('eventTitle');
+  const eventDescription = document.getElementById('eventDescription');
+  const eventDate = document.getElementById('eventDate');
+  const eventLocation = document.getElementById('eventLocation');
+  const eventArtists = document.getElementById('eventArtists');
+  const ticketLink = document.getElementById('ticketLink');
+  const eventImage = document.getElementById('eventImage');
+
+  const eventContainer = document.getElementById('eventContainer');
+  const pagination = document.getElementById('pagination');
+
+  const allEventIds = [
+    'vv178ZbJGkSQO-lJ',
+    'Z7r9jZ1AdX9fP',
+    'G5vYZ9xj1R51T',
+    'vvG1HZ94OZKtR',
+    'k7vGF9oPLKqBo',
+    '1AvfZ9GkE9pZK',
+  ];
+
   let currentPage = 1;
-  const eventsPerPage = 20;
-  let allEvents = [];
+  const eventsPerPage = 4;
 
-  // Modal functions
-  function openModal(eventData) {
-    // Populate modal content
-    document.getElementById('eventTitle').textContent = eventData.name || 'Unknown Event';
-    document.getElementById('eventDate').textContent = eventData.dates?.start?.localDate || 'Date not available';
-    document.getElementById('eventLocation').textContent = 
-      `${eventData._embedded?.venues?.[0]?.name || 'Venue not specified'}, ${eventData._embedded?.venues?.[0]?.city?.name || ''}`;
-    document.getElementById('eventDescription').textContent = eventData.info || 'No description available';
-    document.getElementById('eventImage').src = eventData.images?.[0]?.url || 'https://placehold.co/600x400?text=No+Image';
-    document.getElementById('ticketLink').href = eventData.url || '#';
-
-    // Show modal with animation
-    modal.style.display = 'flex';
-    document.body.style.overflow = 'hidden';
-    modalContent.classList.add('animate__animated', 'animate__zoomIn');
-  }
-
-  function closeModalFunc() {
-    modalContent.classList.remove('animate__zoomIn');
-    modalContent.classList.add('animate__zoomOut');
-    setTimeout(() => {
-      modal.style.display = 'none';
-      document.body.style.overflow = 'auto';
-      modalContent.classList.remove('animate__zoomOut');
-    }, 500);
-  }
-
-  // Event listeners for modal
-  closeModal.addEventListener('click', closeModalFunc);
-  modal.addEventListener('click', (e) => {
-    if (e.target === modal) closeModalFunc();
-  });
-
-  // Fetch events from API
-  async function fetchEvents() {
-    try {
-      eventContainer.innerHTML = '<div class="loading">Loading events...</div>';
-      
-      const response = await fetch(
-        `https://app.ticketmaster.com/discovery/v2/events.json?apikey=${API_KEY}&size=100&countryCode=US`
-      );
-      const data = await response.json();
-      allEvents = data._embedded?.events || [];
-      
-      if (allEvents.length === 0) {
-        eventContainer.innerHTML = '<div class="no-events">No events found</div>';
-        return;
-      }
-      
-      renderEvents();
-      renderPagination();
-      
-    } catch (error) {
-      console.error('Error fetching events:', error);
-      eventContainer.innerHTML = `
-        <div class="error">
-          Failed to load events. ${error.message}
-          <button class="retry-btn" onclick="location.reload()">Try Again</button>
-        </div>
-      `;
-    }
-  }
-
-  // Render events
-  function renderEvents() {
+  function displayEvents(page) {
     eventContainer.innerHTML = '';
-    
-    const start = (currentPage - 1) * eventsPerPage;
+    const start = (page - 1) * eventsPerPage;
     const end = start + eventsPerPage;
-    const eventsToShow = allEvents.slice(start, end);
-    
-    eventsToShow.forEach(event => {
-      const card = document.createElement('div');
-      card.className = 'event-card';
-      card.innerHTML = `
-        <img src="${event.images?.[0]?.url || 'https://placehold.co/180x227?text=No+Image'}" 
-             alt="${event.name}" 
-             class="event-image">
-        <div class="event-info">
-          <strong>${event.name || 'Untitled Event'}</strong>
-          <div>${event.dates?.start?.localDate || 'Date not available'}</div>
-          <div>${event._embedded?.venues?.[0]?.city?.name || 'Location not specified'}</div>
-        </div>
-      `;
-      
-      // Add click event to open modal
-      card.addEventListener('click', () => openModal(event));
-      eventContainer.appendChild(card);
-    });
+    const currentEvents = allEventIds.slice(start, end);
+    currentEvents.forEach(fetchEvent);
+    updatePagination();
   }
 
-  // Pagination
-  function renderPagination() {
+  function updatePagination() {
     pagination.innerHTML = '';
     const pageCount = Math.ceil(allEvents.length / eventsPerPage);
     
@@ -133,21 +68,102 @@ document.addEventListener('DOMContentLoaded', async () => {
       });
       pagination.appendChild(btn);
     }
-    
-    // Next button
-    const nextBtn = document.createElement('button');
-    nextBtn.className = `pag-button ${currentPage === pageCount ? 'disabled' : ''}`;
-    nextBtn.innerHTML = '&gt;';
-    nextBtn.addEventListener('click', () => {
-      if (currentPage < pageCount) {
-        currentPage++;
-        renderEvents();
-        renderPagination();
-      }
-    });
-    pagination.appendChild(nextBtn);
   }
 
-  // Initialize
-  fetchEvents();
+  function createEventCard(eventData) {
+    const card = document.createElement('div');
+    card.className = 'event-card';
+    card.setAttribute('data-event-id', eventData.id);
+
+    const img = document.createElement('img');
+    img.src = eventData.images?.[0]?.url || 'https://placehold.co/180x227';
+    img.alt = 'Event Image';
+
+    const info = document.createElement('div');
+    info.className = 'event-info';
+    info.innerHTML = `
+      <strong>${eventData.name}</strong>
+      <div>${eventData.dates?.start?.localDate || ''} ${
+      eventData.dates?.start?.localTime || ''
+    }</div>
+      <div>${eventData._embedded?.venues?.[0]?.city?.name || ''}</div>`;
+
+    card.appendChild(img);
+    card.appendChild(info);
+    card.addEventListener('click', () => openModal(eventData.id));
+    eventContainer.appendChild(card);
+  }
+
+  function fetchEvent(eventId) {
+    fetch(
+      `https://app.ticketmaster.com/discovery/v2/events/${eventId}.json?apikey=${API_KEY}`
+    )
+      .then(res => res.json())
+      .then(data => createEventCard(data))
+      .catch(err => console.error('Failed to fetch event:', err));
+  }
+
+  function fetchEventDetails(eventId) {
+    fetch(
+      `https://app.ticketmaster.com/discovery/v2/events/${eventId}.json?apikey=${API_KEY}`
+    )
+      .then(res => res.json())
+      .then(data => {
+        eventTitle.textContent = data.name || 'Unknown Title';
+        eventDescription.textContent = data.info || 'No description available.';
+        eventDate.textContent =
+          data.dates?.start?.localDate +
+          ' ' +
+          (data.dates?.start?.localTime || '');
+        eventLocation.textContent =
+          data._embedded?.venues?.[0]?.name +
+          ', ' +
+          data._embedded?.venues?.[0]?.city?.name;
+        eventArtists.textContent =
+          data._embedded?.attractions?.map(a => a.name).join(', ') || 'N/A';
+        ticketLink.href = data.url || '#';
+        eventImage.src =
+          data.images?.[0]?.url || 'https://placehold.co/400x400';
+      })
+      .catch(err => {
+        console.error('Failed to fetch event:', err);
+        eventTitle.textContent = 'Error loading event';
+        eventDescription.textContent = 'Please try again later.';
+      });
+  }
+
+  function openModal(eventId) {
+    fetchEventDetails(eventId);
+    modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+    modalContent.classList.remove('animate__zoomOutDown');
+    modalContent.classList.add('animate__zoomInUp');
+  }
+
+  function closeModalFunc() {
+    modalContent.classList.remove('animate__zoomInUp');
+    modalContent.classList.add('animate__zoomOutDown');
+    setTimeout(() => {
+      modal.style.display = 'none';
+      document.body.style.overflow = 'auto';
+    }, 500);
+  }
+
+  eventList.addEventListener('click', event => {
+    if (!event.target.tagName === 'IMG') {
+      console.log('abc');
+      return;
+    } else {
+      const id = event.target.id;
+      console.log(id);
+      openModal(id);
+    }
+  });
+
+  closeModal.addEventListener('click', closeModalFunc);
+  modal.addEventListener('click', e => {
+    if (e.target === modal) closeModalFunc();
+  });
+
+  displayEvents(currentPage);
 });
