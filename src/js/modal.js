@@ -1,131 +1,153 @@
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+  // Constants and DOM elements
   const API_KEY = 'brfdbddKGRzc2X8LiBGbED6sZHFCGpLR';
+  const eventContainer = document.querySelector('.event-container');
   const modal = document.getElementById('eventModal');
-  const modalContent = modal.querySelector('.modal-content');
-  const closeModal = modal.querySelector('.modal-close');
+  const modalContent = document.querySelector('.modal-content');
+  const closeModal = document.querySelector('.modal-close');
+  const pagination = document.querySelector('.pagination');
 
-  const eventContainer = document.getElementById('eventContainer');
-  const pagination = document.getElementById('pagination');
-
-  const allEventIds = [
-    'vv178ZbJGkSQO-lJ',
-    'Z7r9jZ1AdX9fP',
-    'G5vYZ9xj1R51T',
-    'vvG1HZ94OZKtR',
-    'k7vGF9oPLKqBo',
-    '1AvfZ9GkE9pZK',
-  ];
-
+  // State
   let currentPage = 1;
-  const eventsPerPage = 4;
+  const eventsPerPage = 20;
+  let allEvents = [];
 
-  // Display Events
-  function displayEvents(page) {
-    eventContainer.innerHTML = ''; // Clear previous content
-    const start = (page - 1) * eventsPerPage;
-    const end = start + eventsPerPage;
-    const currentEvents = allEventIds.slice(start, end);
-    currentEvents.forEach(fetchEvent);
-    updatePagination();
-  }
+  // Modal functions
+  function openModal(eventData) {
+    // Populate modal content
+    document.getElementById('eventTitle').textContent = eventData.name || 'Unknown Event';
+    document.getElementById('eventDate').textContent = eventData.dates?.start?.localDate || 'Date not available';
+    document.getElementById('eventLocation').textContent = 
+      `${eventData._embedded?.venues?.[0]?.name || 'Venue not specified'}, ${eventData._embedded?.venues?.[0]?.city?.name || ''}`;
+    document.getElementById('eventDescription').textContent = eventData.info || 'No description available';
+    document.getElementById('eventImage').src = eventData.images?.[0]?.url || 'https://placehold.co/600x400?text=No+Image';
+    document.getElementById('ticketLink').href = eventData.url || '#';
 
-  // Pagination
-  function updatePagination() {
-    pagination.innerHTML = '';
-    const pageCount = Math.ceil(allEventIds.length / eventsPerPage);
-    for (let i = 1; i <= pageCount; i++) {
-      const btn = document.createElement('button');
-      btn.className = `page-btn${i === currentPage ? ' active' : ''}`;
-      btn.textContent = i;
-      btn.addEventListener('click', () => {
-        currentPage = i;
-        displayEvents(i);
-      });
-      pagination.appendChild(btn);
-    }
-  }
-
-  // Create Event Card
-  function createEventCard(eventData) {
-    const card = document.createElement('div');
-    card.className = 'event-card';
-    card.setAttribute('data-event-id', eventData.id);
-
-    const img = document.createElement('img');
-    img.src = eventData.images?.[0]?.url || 'https://placehold.co/180x227';
-    img.alt = 'Event Image';
-
-    const info = document.createElement('div');
-    info.className = 'event-info';
-    info.innerHTML = `
-      <strong>${eventData.name}</strong>
-      <div>${eventData.dates?.start?.localDate || ''} ${eventData.dates?.start?.localTime || ''}</div>
-      <div>${eventData._embedded?.venues?.[0]?.city?.name || ''}</div>`;
-
-    card.appendChild(img);
-    card.appendChild(info);
-    card.addEventListener('click', () => openModal(eventData.id));
-    eventContainer.appendChild(card);
-  }
-
-  // Fetch Event Data
-  function fetchEvent(eventId) {
-    fetch(`https://app.ticketmaster.com/discovery/v2/events/${eventId}.json?apikey=${API_KEY}`)
-      .then(res => res.json())
-      .then(data => createEventCard(data))
-      .catch(err => {
-        console.error('Failed to fetch event:', err);
-        const fallbackCard = document.createElement('div');
-        fallbackCard.className = 'event-card';
-        fallbackCard.textContent = 'Failed to load event';
-        eventContainer.appendChild(fallbackCard);
-      });
-  }
-
-  // Fetch Event Details for Modal
-  function fetchEventDetails(eventId) {
-    fetch(`https://app.ticketmaster.com/discovery/v2/events/${eventId}.json?apikey=${API_KEY}`)
-      .then(res => res.json())
-      .then(data => {
-        document.getElementById('eventTitle').textContent = data.name || 'Unknown Title';
-        document.getElementById('eventDescription').textContent = data.info || 'No description available.';
-        document.getElementById('eventDate').textContent = `${data.dates?.start?.localDate} ${data.dates?.start?.localTime || ''}`;
-        document.getElementById('eventLocation').textContent = `${data._embedded?.venues?.[0]?.name}, ${data._embedded?.venues?.[0]?.city?.name}`;
-        document.getElementById('eventArtists').textContent = data._embedded?.attractions?.map(a => a.name).join(', ') || 'N/A';
-        document.getElementById('ticketLink').href = data.url || '#';
-        document.getElementById('eventImage').src = data.images?.[0]?.url || 'https://placehold.co/400x400';
-      })
-      .catch(err => {
-        console.error('Failed to fetch event details:', err);
-        document.getElementById('eventTitle').textContent = 'Error loading event';
-        document.getElementById('eventDescription').textContent = 'Please try again later.';
-      });
-  }
-
-  // Open Modal
-  function openModal(eventId) {
-    fetchEventDetails(eventId);
+    // Show modal with animation
     modal.style.display = 'flex';
     document.body.style.overflow = 'hidden';
-    modalContent.classList.remove('animate__zoomOutDown');
-    modalContent.classList.add('animate__zoomInUp');
+    modalContent.classList.add('animate__animated', 'animate__zoomIn');
   }
 
-  // Close Modal
   function closeModalFunc() {
-    modalContent.classList.remove('animate__zoomInUp');
-    modalContent.classList.add('animate__zoomOutDown');
+    modalContent.classList.remove('animate__zoomIn');
+    modalContent.classList.add('animate__zoomOut');
     setTimeout(() => {
       modal.style.display = 'none';
       document.body.style.overflow = 'auto';
+      modalContent.classList.remove('animate__zoomOut');
     }, 500);
   }
 
+  // Event listeners for modal
   closeModal.addEventListener('click', closeModalFunc);
-  modal.addEventListener('click', e => {
+  modal.addEventListener('click', (e) => {
     if (e.target === modal) closeModalFunc();
   });
 
+  // Fetch events from API
+  async function fetchEvents() {
+    try {
+      eventContainer.innerHTML = '<div class="loading">Loading events...</div>';
+      
+      const response = await fetch(
+        `https://app.ticketmaster.com/discovery/v2/events.json?apikey=${API_KEY}&size=100&countryCode=US`
+      );
+      const data = await response.json();
+      allEvents = data._embedded?.events || [];
+      
+      if (allEvents.length === 0) {
+        eventContainer.innerHTML = '<div class="no-events">No events found</div>';
+        return;
+      }
+      
+      renderEvents();
+      renderPagination();
+      
+    } catch (error) {
+      console.error('Error fetching events:', error);
+      eventContainer.innerHTML = `
+        <div class="error">
+          Failed to load events. ${error.message}
+          <button class="retry-btn" onclick="location.reload()">Try Again</button>
+        </div>
+      `;
+    }
+  }
+
+  // Render events
+  function renderEvents() {
+    eventContainer.innerHTML = '';
+    
+    const start = (currentPage - 1) * eventsPerPage;
+    const end = start + eventsPerPage;
+    const eventsToShow = allEvents.slice(start, end);
+    
+    eventsToShow.forEach(event => {
+      const card = document.createElement('div');
+      card.className = 'event-card';
+      card.innerHTML = `
+        <img src="${event.images?.[0]?.url || 'https://placehold.co/180x227?text=No+Image'}" 
+             alt="${event.name}" 
+             class="event-image">
+        <div class="event-info">
+          <strong>${event.name || 'Untitled Event'}</strong>
+          <div>${event.dates?.start?.localDate || 'Date not available'}</div>
+          <div>${event._embedded?.venues?.[0]?.city?.name || 'Location not specified'}</div>
+        </div>
+      `;
+      
+      // Add click event to open modal
+      card.addEventListener('click', () => openModal(event));
+      eventContainer.appendChild(card);
+    });
+  }
+
+  // Pagination
+  function renderPagination() {
+    pagination.innerHTML = '';
+    const pageCount = Math.ceil(allEvents.length / eventsPerPage);
+    
+    // Previous button
+    const prevBtn = document.createElement('button');
+    prevBtn.className = `pag-button ${currentPage === 1 ? 'disabled' : ''}`;
+    prevBtn.innerHTML = '&lt;';
+    prevBtn.addEventListener('click', () => {
+      if (currentPage > 1) {
+        currentPage--;
+        renderEvents();
+        renderPagination();
+      }
+    });
+    pagination.appendChild(prevBtn);
+    
+    // Page buttons
+    for (let i = 1; i <= pageCount; i++) {
+      const btn = document.createElement('button');
+      btn.className = `pag-button ${i === currentPage ? 'active' : ''}`;
+      btn.textContent = i;
+      btn.addEventListener('click', () => {
+        currentPage = i;
+        renderEvents();
+        renderPagination();
+      });
+      pagination.appendChild(btn);
+    }
+    
+    // Next button
+    const nextBtn = document.createElement('button');
+    nextBtn.className = `pag-button ${currentPage === pageCount ? 'disabled' : ''}`;
+    nextBtn.innerHTML = '&gt;';
+    nextBtn.addEventListener('click', () => {
+      if (currentPage < pageCount) {
+        currentPage++;
+        renderEvents();
+        renderPagination();
+      }
+    });
+    pagination.appendChild(nextBtn);
+  }
+
   // Initialize
-  displayEvents(currentPage);
+  fetchEvents();
 });
